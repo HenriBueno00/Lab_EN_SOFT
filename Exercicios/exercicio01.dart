@@ -6,7 +6,6 @@ void main() {
 
   print("Digite o ciclo que o aluno está na faculdade:");
   String ciclo = stdin.readLineSync()!;
-
   print("Digite a nota da prova (0-10):");
   double notaProva = double.parse(stdin.readLineSync()!);
 
