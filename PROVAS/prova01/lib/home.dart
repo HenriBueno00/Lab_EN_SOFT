@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prova01/tela01.dart';
 import 'package:prova01/tela02.dart';
+
 class Home extends StatelessWidget {
   const Home({super.key});
 
@@ -8,7 +9,13 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Minha Tela'),
+        title: Text('Minha Tela',
+          style: TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.bold
+          ),
+        ),
+        backgroundColor: Colors.blueAccent,
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.settings),
@@ -33,7 +40,11 @@ class Home extends StatelessWidget {
       body: Center(
         child: Text(
           'Henrique Bueno Fonseca',
-          style: TextStyle(fontSize: 24.0),
+          style:
+          TextStyle(
+              fontSize: 35,
+              fontWeight: FontWeight.bold
+          ),
         ),
       ),
     );

@@ -6,7 +6,6 @@ class Tela01 extends StatefulWidget {
   @override
   State<Tela01> createState() => _Tela01State();
 }
-
 class _Tela01State extends State<Tela01> {
   final TextEditingController precoController = TextEditingController();
   final TextEditingController descontoController1 = TextEditingController();
@@ -20,7 +19,6 @@ class _Tela01State extends State<Tela01> {
   double valorFinalLoja2 = 0.0;
   double valorFinalLoja3 = 0.0;
 
-
   void calcularValorFinal() {
     double preco = double.parse(precoController.text);
     double desconto1 = double.parse(descontoController1.text);
@@ -30,15 +28,12 @@ class _Tela01State extends State<Tela01> {
     double desconto3 = double.parse(descontoController3.text);
     double frete3 = double.parse(freteController3.text);
 
-
     valorFinalLoja1 = (preco - (preco * (desconto1 / 100))) + frete1;
     valorFinalLoja2 = (preco - (preco * (desconto2 / 100))) + frete2;
     valorFinalLoja3 = (preco - (preco * (desconto3 / 100))) + frete3;
 
-
     setState(() {});
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

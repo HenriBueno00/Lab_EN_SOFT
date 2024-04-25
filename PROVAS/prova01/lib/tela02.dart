@@ -2,92 +2,137 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 
 class Tela02 extends StatefulWidget {
-  const Tela02({Key? key});
-
   @override
-  State<Tela02> createState() => _Tela02State();
+  _Tela02State createState() => _Tela02State();
 }
 
 class _Tela02State extends State<Tela02> {
-  final TextEditingController valorInvestidoController = TextEditingController();
-  final TextEditingController taxaJurosController = TextEditingController();
-  final TextEditingController periodoInvestimentoController = TextEditingController();
-
-  double valorFinalInvestimento = 0.0;
+  double valorInicial = 0;
+  double taxaJurosMensal = 0;
+  int periodoMeses = 0;
+  double valorFinal = 0;
+  double rendimentoMensalTotal = 0;
   List<double> rendimentosMensais = [];
-
-  void calcularRendimento() {
-    double valorInvestido = double.tryParse(valorInvestidoController.text) ?? 0.0;
-    double taxaJuros = double.tryParse(taxaJurosController.text) ?? 0.0 / 100;
-    int periodoInvestimento = int.tryParse(periodoInvestimentoController.text) ?? 0;
-
-    valorFinalInvestimento = valorInvestido * pow(1 + taxaJuros, periodoInvestimento);
-
-    rendimentosMensais.clear();
-    for (int i = 1; i <= 6; i++) {
-      double rendimento = valorInvestido * taxaJuros * i;
-      rendimentosMensais.add(rendimento);
-    }
-    setState(() {});
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Tela 02"),
-        backgroundColor: Colors.blueAccent,
+        title: Text('Calculadora de Rendimento'),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextFormField(
-              controller: valorInvestidoController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: 'Valor Investido (R\$)'),
-            ),
-            SizedBox(height: 10.0),
-            TextFormField(
-              controller: taxaJurosController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: 'Taxa de Juros Mensal (%)'),
-            ),
-            SizedBox(height: 10.0),
-            TextFormField(
-              controller: periodoInvestimentoController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: 'Período de Investimento (meses)'),
-            ),
-            SizedBox(height: 20.0),
-            ElevatedButton(
-              onPressed: calcularRendimento,
-              child: Text('Calcular'),
-            ),
-            SizedBox(height: 20.0),
-            Text(
-              'Valor Final do Investimento: R\$${valorFinalInvestimento.toStringAsFixed(2)}',
-              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10.0),
-            Text(
-              'Rendimento Mensal:',
-              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10.0),
-            Expanded(
-              child: ListView.builder(
-                itemCount: rendimentosMensais.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text('Mês ${index + 1}: R\$${rendimentosMensais[index].toStringAsFixed(2)}'),
-                  );
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextField(
+                decoration: InputDecoration(labelText: 'Valor Inicial (R\$)'),
+                keyboardType: TextInputType.number,
+                onChanged: (value) {
+                  setState(() {
+                    valorInicial = double.parse(value);
+                  });
                 },
               ),
-            ),
-          ],
+              SizedBox(height: 20),
+              TextField(
+                decoration: InputDecoration(labelText: 'Taxa de Juros (%)'),
+                keyboardType: TextInputType.number,
+                onChanged: (value) {
+                  setState(() {
+                    taxaJurosMensal = double.parse(value) / 100;
+                  });
+                },
+              ),
+              SizedBox(height: 20),
+              TextField(
+                decoration: InputDecoration(labelText: 'Período (meses)'),
+                keyboardType: TextInputType.number,
+                onChanged: (value) {
+                  setState(() {
+                    periodoMeses = int.parse(value);
+                  });
+                },
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  if (validarEntrada()) {
+                    calcularRendimento();
+                    setState(() {});
+                  }
+                },
+                child: Text('Calcular'),
+              ),
+              SizedBox(height: 20),
+              Text(
+                'Valor Final: R\$ ${valorFinal.toStringAsFixed(2)}',
+                style: TextStyle(fontSize: 18),
+              ),
+              SizedBox(height: 10),
+              Text(
+                'Rendimento Total (6 meses): R\$ ${rendimentoMensalTotal.toStringAsFixed(2)}',
+                style: TextStyle(fontSize: 18),
+              ),
+              SizedBox(height: 20),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: rendimentosMensais.take(6).map((rendimento) {
+                  int index = rendimentosMensais.indexOf(rendimento);
+                  return ListTile(
+                    title: Text('Mês ${index + 1}'),
+                    trailing: Text('R\$ ${rendimento.toStringAsFixed(2)}'),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  bool validarEntrada() {
+    if (valorInicial < 1000 || valorInicial > 10000) {
+      _mostrarMensagemErro('Valor inicial deve estar entre R\$ 1.000 e R\$ 10.000');
+      return false;
+    }
+
+    if (taxaJurosMensal < 0.005 || taxaJurosMensal > 0.025) {
+      _mostrarMensagemErro('Taxa de juros deve estar entre 0,5% e 2,5%');
+      return false;
+    }
+
+    if (periodoMeses < 6 || periodoMeses > 36) {
+      _mostrarMensagemErro('Período de investimento deve estar entre 6 e 36 meses');
+      return false;
+    }
+
+    return true;
+  }
+
+
+  void calcularRendimento() {
+    valorFinal = valorInicial * pow(1 + taxaJurosMensal, periodoMeses);
+    rendimentoMensalTotal = (valorFinal - valorInicial) / periodoMeses;
+    rendimentosMensais.clear();
+
+    double saldoAtual = valorInicial;
+
+    for (int mes = 1; mes <= periodoMeses; mes++) {
+      double rendimentoMensalMes = saldoAtual * taxaJurosMensal;
+      rendimentosMensais.add(rendimentoMensalMes);
+
+      saldoAtual += rendimentoMensalMes;
+    }
+  }
+
+  void _mostrarMensagemErro(String mensagem) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(mensagem),
+        backgroundColor: Colors.red,
       ),
     );
   }
